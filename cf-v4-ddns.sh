@@ -100,7 +100,7 @@ if [ "$CFRECORD_NAME" != "$CFZONE_NAME" ] && ! [ -z "${CFRECORD_NAME##*$CFZONE_N
 fi
 
 # Get current and old WAN ip
-WAN_IP=`curl -s ${WANIPSITE}`
+WAN_IP=`curl -sL ${WANIPSITE}`
 WAN_IP_FILE=$CFFILE_PATH/.cf-wan_ip_$CFRECORD_NAME.txt
 if [ -f $WAN_IP_FILE ]; then
   OLD_WAN_IP=`cat $WAN_IP_FILE`
@@ -112,6 +112,12 @@ fi
 # If WAN IP is unchanged an not -f flag, exit here
 if [ "$WAN_IP" = "$OLD_WAN_IP" ] && [ "$FORCE" = false ]; then
   echo "$NOW_DATE_TIME WAN IP Unchanged, to update anyway use flag -f true"
+  exit 0
+fi
+
+# If WAN IP is empty, exit here
+if [ -z "$WAN_IP" ]; then
+  echo "$NOW_DATE_TIME WAN IP is empty, exit"
   exit 0
 fi
 
